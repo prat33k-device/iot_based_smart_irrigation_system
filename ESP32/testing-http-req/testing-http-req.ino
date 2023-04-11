@@ -52,7 +52,6 @@ int get_pump_status() {
   } else if(resPayload == "ON") {
     return 1;
   }
-
   return -1;
 }
 
@@ -69,6 +68,9 @@ void operate_pump(int x) {
 }
 
 void setup() {
+
+  pinMode(2, OUTPUT);
+  
   Serial.begin(115200);
   delay(1000);
 
@@ -103,13 +105,14 @@ void loop() {
 
     if(pump_status != current_pump_status) {
       current_pump_status = pump_status;
-      operate_pump(pump_status);
     }
 
     count++;
     count = count % sensor_refresh_rate;
 
     delay(pump_delay);
+
+    operate_pump(current_pump_status);
     
   } else {
     delay(500);

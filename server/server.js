@@ -56,14 +56,26 @@ app.get("/pump-status/:authKey", async (req, res)=>{
     
 
     } else {
-        res.status.send("Unauthorized");
+        res.status(401).send("Unauthorized");
     }
 
 });
 
-// app.post("/set-pump-status", async (req, res)=> {
+app.post("/set-pump-status", async (req, res)=> {
 
-// });
+    if(req.body.authKey === authKey) {
+
+        const pump_status = await PumpStatus.findById(id_of_pump);
+        pump_status.status = req.body.newStatus;
+        await pump_status.save();
+        console.log("pump status updated succesfully");
+        res.sendStatus(200);
+
+    } else {
+        res.status(401).send("Unauthorized");
+    }
+
+});
 
 app.listen(3000, ()=> {
     console.log("Server is running at port 3000");
