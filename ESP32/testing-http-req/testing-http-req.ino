@@ -19,6 +19,7 @@ const int sensor_refresh_rate = 3;
 const int pump_delay = 2000;
 int count = 0;
 int current_pump_status = 0;                    // 0 -> OFF    1 -> ON
+bool is_controled_by_user = false;
 
 HTTPClient http;
 DFRobot_DHT11 DHT;
@@ -142,22 +143,27 @@ void loop() {
   int tempr = DHT.temperature;
   int humid = DHT.humidity;
 
-  if(current_pump_status == 0 && water_required(soil_moisture, tempr, humid)) {
-    if(WiFi.status()== WL_CONNECTED) {
-      set_pump_status("ON"); 
-    }
+  if(is_controled_by_user == false) {
+    
+    if(current_pump_status == 0 && water_required(soil_moisture, tempr, humid)) {
+      if(WiFi.status()== WL_CONNECTED) {
+        set_pump_status("ON"); 
+      }
 
-    current_pump_status = 1;
-    operate_pump(current_pump_status);
-  }
-  if(current_pump_status == 1 && water_required(soil_moisture, tempr, humid) == false) {
-    if(WiFi.status()== WL_CONNECTED) {
-      set_pump_status("OFF"); 
+      current_pump_status = 1;
+      operate_pump(current_pump_status);
     }
+    if(current_pump_status == 1 && water_required(soil_moisture, tempr, humid) == false) {
+      if(WiFi.status()== WL_CONNECTED) {
+       set_pump_status("OFF"); 
+      }
 
-    current_pump_status = 0;
-    operate_pump(current_pump_status);
+      current_pump_status = 0;
+      operate_pump(current_pump_status);
+    }
+    
   }
+  
   
   if(WiFi.status()== WL_CONNECTED) {
     
@@ -170,6 +176,7 @@ void loop() {
     if(pump_status != -1 && pump_status != current_pump_status) {
       current_pump_status = pump_status;
       operate_pump(current_pump_status);
+      is_controled_by_user = !is_controled_by_user;
     }
 
     count++;
@@ -179,6 +186,7 @@ void loop() {
     
   } else {
     delay(2000);
+    is_controled_by_user = false;
   }
   
 }
