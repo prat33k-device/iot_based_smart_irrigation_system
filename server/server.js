@@ -44,9 +44,16 @@ app.get("/pump-status/:authKey", async (req, res)=>{
 
         const pump_status = await PumpStatus.findById(id_of_pump)
 
-        console.log(pump_status);
+        console.log("pump status: " + pump_status.status);
 
-        res.send(pump_status.status);
+        if(pump_status.status === 0) {
+            res.send("OFF");
+        } else if(pump_status.status === 1) {
+            res.send("ON");
+        } else {
+            res.send("-1");
+        }
+    
 
     } else {
         res.status.send("Unauthorized");
@@ -54,9 +61,9 @@ app.get("/pump-status/:authKey", async (req, res)=>{
 
 });
 
-app.post("/set-pump-status", async (req, res)=> {
-    
-});
+// app.post("/set-pump-status", async (req, res)=> {
+
+// });
 
 app.listen(3000, ()=> {
     console.log("Server is running at port 3000");

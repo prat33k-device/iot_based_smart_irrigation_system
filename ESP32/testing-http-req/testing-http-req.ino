@@ -46,6 +46,14 @@ int get_pump_status() {
   Serial.print("pump status: ");
   Serial.println(resPayload);
   http.end();
+
+  if(resPayload == "OFF") {
+    return 0;
+  } else if(resPayload == "ON") {
+    return 1;
+  }
+
+  return -1;
 }
 
 void operate_pump(int x) {
