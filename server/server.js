@@ -28,10 +28,13 @@ app.post("/update-sensor", async (req, res)=>{
 
     console.log(req.body);
     
-    // const data = new SensorData({
-    //     name: "sensor-xyz",
-    //     sensor_number: req.body.sensor_value
-    // });
+    const data = new SensorData({
+        soil_moisture: req.body.soil_moisture,
+        temperature: req.body.temp,
+        humidity: req.body.humidity
+    });
+
+    console.log(data);
 
     // await data.save();
 

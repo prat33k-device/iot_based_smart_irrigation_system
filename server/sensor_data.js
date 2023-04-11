@@ -1,15 +1,12 @@
 const mongoose = require("mongoose");
 
 const sensor_data_schema = mongoose.Schema({
-    sensor_name: {
-        type: String,
-        required: [true, "Can't add data without specifing sensor_name"]
-    },
-    value: {
+    soil_moisture: {
         type: Number,
-        required: [true, "Can't add data without specifing sensor value"]
+        required: [true, "Can't add data without specifing soil moisture value"]
     },
-    unit: String,
+    temperature: Number,
+    humidity: Number,
     time: { 
         type: Date,
         default: Date.now
