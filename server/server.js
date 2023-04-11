@@ -8,6 +8,8 @@ const PumpStatus = require("./pump_status");
 //credintials
 const dbName = "irrigation_system_db";
 const dbURL = "mongodb+srv://admin-prat33k:admin123@cluster0.4wyjr.mongodb.net/" + dbName;
+const authKey = "Jqoe6UzmSPjG7E0";
+const id_of_pump = "6435037afc098bd383efab6b";
 mongoose.connect(dbURL);
 
 
@@ -22,7 +24,7 @@ app.get("/test", (req, res)=>{
     res.sendStatus(200);
 });
 
-app.post("/sensor", async (req, res)=>{
+app.post("/update-sensor", async (req, res)=>{
 
     console.log(req.body);
     
@@ -34,6 +36,26 @@ app.post("/sensor", async (req, res)=>{
     // await data.save();
 
     res.send("data fuckin recived");
+});
+
+app.get("/pump-status/:authKey", async (req, res)=>{
+
+    if(req.params.authKey === authKey) {
+
+        const pump_status = await PumpStatus.findById(id_of_pump)
+
+        console.log(pump_status);
+
+        res.send(pump_status.status);
+
+    } else {
+        res.status.send("Unauthorized");
+    }
+
+});
+
+app.post("/set-pump-status", async (req, res)=> {
+    
 });
 
 app.listen(3000, ()=> {
