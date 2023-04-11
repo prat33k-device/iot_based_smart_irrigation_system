@@ -69,7 +69,7 @@ app.post("/set-pump-status", async (req, res)=> {
     if(req.body.authKey === authKey) {
 
         const pump_status = await PumpStatus.findById(id_of_pump);
-        pump_status.status = req.body.newStatus;
+        pump_status.status = Number(req.body.newStatus);
         await pump_status.save();
         console.log("pump status updated succesfully");
         res.sendStatus(200);
