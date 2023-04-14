@@ -1,11 +1,14 @@
 #include<HTTPClient.h>
 #include <WiFi.h>
 #include <DFRobot_DHT11.h>
+#include <utility> // for std::pair
+#include <ArduinoJson.h>
+
 
 // credientials
-const char* ssid = "loading";                            // computer should be connected to the network also for working at localhost
-const char* password =  "Satyam844@";
-const String serverURL = "http://172.22.53.30:3000";
+const char* ssid = "Bat_mobile";                            // computer should be connected to the network also for working at localhost
+const char* password =  "sux43c7b";
+const String serverURL = "http://192.168.95.38:3000";
 const String authKey = "Jqoe6UzmSPjG7E0";
 
 //pins
@@ -19,7 +22,7 @@ const int sensor_refresh_rate = 3;
 const int pump_delay = 2000;
 int count = 0;
 int current_pump_status = 0;                    // 0 -> OFF    1 -> ON
-bool is_controled_by_user = false;
+bool is_controled_by_user = false;              // true -> Automation   false -> NO Automation
 
 HTTPClient http;
 DFRobot_DHT11 DHT;
@@ -46,7 +49,8 @@ void test_req() {
   http.end();
 }
 
-int get_pump_status() {
+// {status, is_conrtolled_by_user}
+std::pair<int, int> get_pump_status() {
   http.begin(serverURL + "/pump-status/" + authKey);
   int httpResCode = http.GET();
   String resPayload = http.getString();
@@ -54,12 +58,25 @@ int get_pump_status() {
   Serial.println(resPayload);
   http.end();
 
-  if(resPayload == "OFF") {
-    return 0;
-  } else if(resPayload == "ON") {
-    return 1;
+//  if(resPayload == "statusOFF-is_controlled_by_user0") {
+//    return std::make_pair(0, 0);
+//  } else if(resPayload == "statusOFF-is_controlled_by_user1") {
+//    return std::make_pair(0, 1);
+//  } else if(resPayload == "statusON-is_controlled_by_user0") {
+//    return std::make_pair(1, 0);
+//  } else if(resPayload == "statusON-is_controlled_by_user1") {
+//    return std::make_pair(1, 1);
+//  }
+
+  StaticJsonDocument<200> jsonDoc;
+  DeserializationError error = deserializeJson(jsonDoc, resPayload);
+
+  if(httpResCode != 200 || error) {
+    Serial.println("error occored while get request");
+    return std::make_pair(-1, -1);
   }
-  return -1;
+  
+  return std::make_pair(jsonDoc["pump_status"].as<int>(), jsonDoc["is_controlled_by_user"].as<int>());
 }
 
 void operate_pump(int x) {              // 0 -> OFF    1 -> ON
@@ -129,7 +146,7 @@ void setup() {
 
   if(WiFi.status()== WL_CONNECTED) {
     test_req();
-    current_pump_status = get_pump_status(); 
+    current_pump_status = get_pump_status().first; 
   }
     
 }
@@ -144,6 +161,7 @@ void loop() {
   int humid = DHT.humidity;
 
   if(is_controled_by_user == false) {
+    // Automation code
     
     if(current_pump_status == 0 && water_required(soil_moisture, tempr, humid)) {
       if(WiFi.status()== WL_CONNECTED) {
@@ -171,13 +189,15 @@ void loop() {
       update_sensor(soil_moisture, tempr, humid);
     }
 
-    int pump_status = get_pump_status();
+    std::pair<int, int> pump_status = get_pump_status();
 
-    if(pump_status != -1 && pump_status != current_pump_status) {
-      current_pump_status = pump_status;
+    if(pump_status.first != -1 && pump_status.first != current_pump_status) {
+      current_pump_status = pump_status.first;
       operate_pump(current_pump_status);
-      is_controled_by_user = !is_controled_by_user;
     }
+
+      is_controled_by_user = pump_status.second;
+      
 
     count++;
     count = count % sensor_refresh_rate;
