@@ -28,19 +28,20 @@ app.get("/test", (req, res)=>{
 
 app.post("/update-sensor", async (req, res)=>{
 
-    console.log(req.body);
+    if(req.body.authKey === authKey) {
+        const data = new SensorData({
+            soil_moisture: req.body.soil_moisture,
+            temperature: req.body.temp,
+            humidity: req.body.humidity
+        });
     
-    const data = new SensorData({
-        soil_moisture: req.body.soil_moisture,
-        temperature: req.body.temp,
-        humidity: req.body.humidity
-    });
-
-    console.log(data);
-
-    // await data.save();
-
-    res.send("data fuckin recived");
+        console.log(data);
+        // await data.save();
+        res.send("data fuckin recived");
+    } else {
+        res.status(401).send("Unauthorized");
+    }
+    
 });
 
 app.get("/pump-status/:authKey", async (req, res)=>{
