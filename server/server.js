@@ -10,7 +10,9 @@ const dbName = "irrigation_system_db";
 const dbURL = "mongodb+srv://admin-prat33k:admin123@cluster0.4wyjr.mongodb.net/" + dbName;
 const authKey = "Jqoe6UzmSPjG7E0";
 const ID_OF_PUMP = "6437092f7d099b6ee1f2e8f5";
-mongoose.connect(dbURL);
+mongoose.connect(dbURL)
+.then(() => console.log('Connected to database'))
+.catch((error) => console.error('Database connection error:', error));
 
 
 const app = express();
@@ -48,18 +50,6 @@ app.get("/pump-status/:authKey", async (req, res)=>{
         const pump_status = await PumpStatus.findById(ID_OF_PUMP)
 
         console.log("pump status: " + pump_status.status + " is_controlled_by_user: " + pump_status.is_controlled_by_user);
-
-        // if(pump_status.status === 0 && pump_status.is_controlled_by_user == 0) {
-        //     res.send("statusOFF-is_controlled_by_user0");
-        // } else if(pump_status.status === 0 && pump_status.is_controlled_by_user == 1) {
-        //     res.send("statusOFF-is_controlled_by_user1");
-        // } else if(pump_status.status === 1 && pump_status.is_controlled_by_user == 0) {
-        //     res.send("statusON-is_controlled_by_user0");
-        // } else if(pump_status.status === 1 && pump_status.is_controlled_by_user == 1) {
-        //     res.send("statusON-is_controlled_by_user1");
-        // } else {
-        //     res.send("-1");
-        // }
 
         res.json({
             pump_status: pump_status.status,

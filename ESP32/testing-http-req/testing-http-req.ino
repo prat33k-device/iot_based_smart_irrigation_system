@@ -58,16 +58,6 @@ std::pair<int, int> get_pump_status() {
   Serial.println(resPayload);
   http.end();
 
-//  if(resPayload == "statusOFF-is_controlled_by_user0") {
-//    return std::make_pair(0, 0);
-//  } else if(resPayload == "statusOFF-is_controlled_by_user1") {
-//    return std::make_pair(0, 1);
-//  } else if(resPayload == "statusON-is_controlled_by_user0") {
-//    return std::make_pair(1, 0);
-//  } else if(resPayload == "statusON-is_controlled_by_user1") {
-//    return std::make_pair(1, 1);
-//  }
-
   StaticJsonDocument<200> jsonDoc;
   DeserializationError error = deserializeJson(jsonDoc, resPayload);
 
