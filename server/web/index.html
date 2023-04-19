@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Irrigation</title>
+    <!-- CSS only -->
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body class="bg-secondary">
+    <div class="box d-flex flex-column h-100">
+        <div class="header">
+            <div class="py-3 bg-dark">
+                <div>
+                    <h2 class="text-center text-white">Smart Irrigation</h2>
+                </div>
+                <div class="container-fluid">
+                    <nav class="navbar navbar-expand-lg navbar-dark">
+                        <ul class="navbar-nav text-center mx-auto">
+                            <li class="nav-item">
+                                <button type="button" class="btn btn-outline-primary mx-2" id="Pump">Pump</button>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button" class="btn btn-outline-primary mx-2"
+                                    id="Auto">Automatic</button>
+                            </li>
+                        </ul>
+                        <div class="d-inline my-2 my-lg-0 ms-auto">
+                            <span class="text-white">Range:-</span>
+                            <input style="width: 200px;" type="range" id="Range_input" min="1" max="25" value="13"
+                                step="6" />
+                            <span class="mx-5"></span>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="content flex-grow-1">
+            <div class="container text-center h-80 w-100">
+                <div class="h-100 w-100 d-flex px-auto text-center bg-white" id="col_wrapper">
+                    <canvas class="h-100 w-100" id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="footer">
+            <div class="bg-dark text-secondary text-center py-2">
+                Developed by : Kishan Soni, Prateek Singh, Vishal, Vedant Damesha
+                <br>
+                Contact at : 2019uee1288@mnit.ac.in
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2/dist/chart.umd.min.js"></script>
+    <script src="/web/js/graph.js"></script>
+    <script src="/web/js/main.js"></script>
+</body>
+
+</html>

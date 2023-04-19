@@ -8,7 +8,7 @@
 // credientials
 const char* ssid = "Bat_mobile";                            // computer should be connected to the network also for working at localhost
 const char* password =  "sux43c7b";
-const String serverURL = "http://192.168.95.38:3000";
+const String serverURL = "http://192.168.45.38:3000";
 const String authKey = "Jqoe6UzmSPjG7E0";
 
 //pins
@@ -90,7 +90,7 @@ void operate_pump(int x) {              // 0 -> OFF    1 -> ON
 }
 
 bool water_required(int soil_moisture, int tempr, int humid) {
-  if(soil_moisture < 1900) {
+  if(soil_moisture > 2000) {
     return true;
   }
   return false;
@@ -136,7 +136,9 @@ void setup() {
 
   if(WiFi.status()== WL_CONNECTED) {
     test_req();
-    current_pump_status = get_pump_status().first; 
+    std::pair<int, int> p = get_pump_status();
+    current_pump_status = p.first;
+    is_controled_by_user = p.second == 1 ? true : false;
   }
     
 }
