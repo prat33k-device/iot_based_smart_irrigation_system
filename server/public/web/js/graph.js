@@ -37,6 +37,7 @@ const status = {
 
 //ConvertTo100 - working
 function convertSIn100(val){
+ 
   return Math.floor((val/MS)*100);
 }
 function convertTIn100(val){
@@ -87,7 +88,7 @@ function ThSDataSet(){
 function SDataSet(arr){
   return {
     label: 'Soil Moisture',
-    data: Array.from(arr, S => convertSIn100(S)),
+    data: Array.from(arr, S => 100 - convertSIn100(S)),
     fill: false,
     borderColor: 'rgb(0, 204, 204)',
     tension: 0.2
@@ -161,18 +162,20 @@ var chart = new Chart(ctx,config);
 
 function updateNewChart(data) {
   // console.log(data);
+  // data.S /= 30;
   if (Last121SensorDataReceived){
     Lbls.shift();
     Lbls.push(Date());
     chart.data.labels = createLabels(Lbls);
     chart.data.datasets[1].data.shift();
-    chart.data.datasets[1].data.push(data.S);
+    chart.data.datasets[1].data.push(100 - convertSIn100(data.S) );
     chart.data.datasets[2].data.shift();
-    chart.data.datasets[2].data.push(data.T);
+    chart.data.datasets[2].data.push(convertTIn100(data.T));
     chart.data.datasets[3].data.shift();
-    chart.data.datasets[3].data.push(data.H);
+    chart.data.datasets[3].data.push(convertHIn100(data.H));
     // Update chart
     chart.update();
+    console.log(data);
   }
 }
 
@@ -184,7 +187,7 @@ function buildNewChart(dataSets,callback){
     Lbls = [];
     for (let i = 0; i < dataSets.length; i++){
       Lbls.push(dataSets[i].date);
-      arrS.push(dataSets[i].S);
+      arrS.push( dataSets[i].S);
       arrT.push(dataSets[i].T);
       arrH.push(dataSets[i].H);
     }

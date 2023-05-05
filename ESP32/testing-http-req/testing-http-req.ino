@@ -8,13 +8,13 @@
 // credientials
 const char* ssid = "Bat_mobile";                            // computer should be connected to the network also for working at localhost
 const char* password =  "sux43c7b";
-const String serverURL = "http://192.168.45.38:3000";
+const String serverURL = "http://192.168.150.38:3000";
 const String authKey = "Jqoe6UzmSPjG7E0";
 
 //pins
 const int soil_moisture_pin = 34;
-const int dht_pin = 4;
-const int relay_pin = 12;
+const int dht_pin = 23;
+const int relay_pin = 5;
 
 // defines the sensor update rate
 const int sensor_refresh_rate = 3;

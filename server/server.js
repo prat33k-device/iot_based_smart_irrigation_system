@@ -15,10 +15,10 @@ const port = process.env.PORT || 3000;
 var data_frequency = 0;
 var range = 13;
 var serverConnected = false;
-var ThreshholdSoil = 60;
-var maximumSoil = 200;
+var ThreshholdSoil = 4000;
+var maximumSoil = 5000;
 var maximumTemperature = 100; //do not change
-var maximumHumidity = 200;
+var maximumHumidity = 300;
 mongoose.connect(dbURL)
 .then(() => {console.log('Connected to database');serverConnected = true;})
 .catch((error) => {console.error('Database connection error:', error);serverConnected = false;});
@@ -48,7 +48,7 @@ socket.on("statusUpdated", async (data, callback) => {
     if(serverConnected){
         const pump_status = await PumpStatus.findById(ID_OF_PUMP);
         pump_status.status = data.pump ? 1 : 0;
-        pump_status.is_controlled_by_user = data.auto ? 1 : 0;
+        pump_status.is_controlled_by_user = data.auto ? 0 : 1;
         await pump_status.save();
         callback(true);
     }else{
@@ -105,6 +105,7 @@ app.get("/test", (req, res)=>{
 });
 
 app.get("/sensors", async (req, res)=>{
+    console.log(req.body);
     ThreshholdSoil = req.body.Ths;
     maximumSoil = req.body.MS;//check if exists
     maximumTemperature = req.body.MT;
@@ -120,7 +121,10 @@ app.post("/update-sensor", async (req, res)=>{
             temperature: req.body.temp,
             humidity: req.body.humidity,
         });
-        if(serverConnected){data.save();}
+        if(serverConnected){
+            console.log(data);
+            await data.save();
+        }
         if (data_frequency == 0){
             let data_to_be_send_frontend = {
                 S : req.body.soil_moisture,
@@ -189,7 +193,7 @@ app.post("/set-is-controlled-by-user", async (req, res)=> {
 
 });
 
-app.get("/",function(req,res){
+app.get("/dashboard",function(req,res){
     res.sendFile(__dirname+'/web/index.html');
 });
 
