@@ -61,7 +61,7 @@ function ConvertDateToHHMM(time){
 function createLabels(arr){
   var labels = [];
   for (let i = 0; i < arr.length; i++) {
-    if (i%2 == 0){
+    if (i%4 == 0){
       if (typeof arr == 'object' && Number.isInteger(arr[i])) {
         labels.push(arr[i].toString());
       } else {

@@ -56,16 +56,15 @@ socket.on("statusUpdated", async (data, callback) => {
     }
 });
 socket.on("lastDataSet", async (rng,callback) => {
-    range = rng;data_frequency = 0;
+    range = Number(rng);data_frequency = 0;
     await waitForCondition(serverConnected);
     var dataset = [];
-    range = 1;//need to update here
-    const allData = await SensorData.find().sort({time : -1}).limit(range*13);allData.reverse();
+    const allData = await SensorData.find().sort({time : -1}).limit(range*51);allData.reverse();
     for (let i = 0; i < allData.length; i += range) {
         let s = 0, t = 0, h = 0;
         let HH = allData[i].time.getHours().toString().padStart(2,0);
         let MM = allData[i].time.getMinutes().toString().padStart(2,0);
-        for(let j = 0; j<range;j++){
+        for(let j = 0; j<range && i+j < allData.length;j++){
             s+=allData[i+j].soil_moisture;
             t+=allData[i+j].temperature;
             h+=allData[i+j].humidity;
@@ -195,6 +194,11 @@ app.post("/set-is-controlled-by-user", async (req, res)=> {
 
 app.get("/dashboard",function(req,res){
     res.sendFile(__dirname+'/web/index.html');
+});
+
+app.get("/alldata", async (req, res)=>{
+    const allData = await SensorData.find().sort({time : -1});
+    res.json(allData);
 });
 
 server.listen(port, ()=> {
