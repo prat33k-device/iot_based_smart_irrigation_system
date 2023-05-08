@@ -8,7 +8,7 @@
 // credientials
 const char* ssid = "Bat_mobile";                            // computer should be connected to the network also for working at localhost
 const char* password =  "sux43c7b";
-const String serverURL = "http://192.168.150.38:3000";
+const String serverURL = "http://192.168.242.38:3000";
 const String authKey = "Jqoe6UzmSPjG7E0";
 
 //pins
@@ -27,6 +27,16 @@ bool is_controled_by_user = false;              // true -> Automation   false ->
 HTTPClient http;
 DFRobot_DHT11 DHT;
 
+void blink_buildin(int x) {
+
+  for(int i = 0; i < x; i++) {
+    digitalWrite(2, HIGH);
+    delay(100);
+    digitalWrite(2, LOW);
+    delay(100);
+  }
+}
+
 
 void update_sensor(int s, int t, int h) {
   http.begin(serverURL + "/update-sensor");
@@ -34,6 +44,9 @@ void update_sensor(int s, int t, int h) {
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int httpResponseCode = http.POST(payload);
   delay(100);
+  if(httpResponseCode == 200) {
+    blink_buildin(1);
+  }
   String postRes = http.getString();
   Serial.print("update POST RESPONSE: ");
   Serial.println(postRes);
@@ -61,6 +74,10 @@ std::pair<int, int> get_pump_status() {
   StaticJsonDocument<200> jsonDoc;
   DeserializationError error = deserializeJson(jsonDoc, resPayload);
 
+  if(httpResCode == 200) {
+    blink_buildin(1);
+  }
+
   if(httpResCode != 200 || error) {
     Serial.println("error occored while get request");
     return std::make_pair(-1, -1);
@@ -70,14 +87,6 @@ std::pair<int, int> get_pump_status() {
 }
 
 void operate_pump(int x) {              // 0 -> OFF    1 -> ON
-
-  if(x == 0) {
-    digitalWrite(2, LOW);
-    Serial.println("pump off");
-  } else if(x == 1) {
-    digitalWrite(2, HIGH);
-    Serial.println("pump on");
-  }
 
   if(x == 0) {
     digitalWrite(relay_pin, HIGH);
@@ -135,6 +144,7 @@ void setup() {
   delay(2000);
 
   if(WiFi.status()== WL_CONNECTED) {
+    blink_buildin(3);
     test_req();
     std::pair<int, int> p = get_pump_status();
     current_pump_status = p.first;

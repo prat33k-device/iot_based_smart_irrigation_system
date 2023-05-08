@@ -12,8 +12,8 @@ const dbURL = "mongodb+srv://admin-prat33k:admin123@cluster0.4wyjr.mongodb.net/"
 const authKey = "Jqoe6UzmSPjG7E0";
 const ID_OF_PUMP = "6437092f7d099b6ee1f2e8f5";
 const port = process.env.PORT || 3000;
-var data_frequency = 0;
-var range = 13;
+var data_frequency = 0,range = 6;
+var CurrS=0, CurrT=0, CurrH=0;
 var serverConnected = false;
 var ThreshholdSoil = 4000;
 var maximumSoil = 5000;
@@ -57,9 +57,11 @@ socket.on("statusUpdated", async (data, callback) => {
 });
 socket.on("lastDataSet", async (rng,callback) => {
     range = Number(rng);data_frequency = 0;
+    CurrS=0;CurrT=0;CurrH=0;
     await waitForCondition(serverConnected);
     var dataset = [];
-    const allData = await SensorData.find().sort({time : -1}).limit(range*51);allData.reverse();
+    const allData = await SensorData.find().sort({time : -1}).limit(range*26);allData.reverse();
+    console.log("arrLength: "+ allData.length);
     for (let i = 0; i < allData.length; i += range) {
         let s = 0, t = 0, h = 0;
         let HH = allData[i].time.getHours().toString().padStart(2,0);
@@ -119,17 +121,23 @@ app.post("/update-sensor", async (req, res)=>{
             soil_moisture: req.body.soil_moisture,
             temperature: req.body.temp,
             humidity: req.body.humidity,
+            time: Date.now()
         });
         if(serverConnected){
             console.log(data);
             await data.save();
         }
-        if (data_frequency == 0){
+
+        CurrS+=req.body.soil_moisture;
+        CurrT+=req.body.temp;
+        CurrH+=req.body.humidity;
+        if (data_frequency == range-1){
             let data_to_be_send_frontend = {
-                S : req.body.soil_moisture,
-                T : req.body.temp,
-                H : req.body.humidity
+                S : CurrS/range,
+                T : CurrT/range,
+                H : CurrH/range
             };
+            CurrS=0;CurrT=0;CurrH=0;
             io.emit("newDataReceived",data_to_be_send_frontend);
         }
         data_frequency = data_frequency + 1;data_frequency = data_frequency%range;
@@ -200,6 +208,21 @@ app.get("/alldata", async (req, res)=>{
     const allData = await SensorData.find().sort({time : -1});
     res.json(allData);
 });
+
+app.get("/copydata",async(req, res)=>{
+    const allData = await SensorData.find();
+    for (let i = 0; i < allData.length; i += 1) {
+        if(serverConnected){
+            const data = new SensorData({
+                soil_moisture: allData[i].soil_moisture,
+                temperature: allData[i].temp,
+                humidity: allData[i].humidity,
+            })
+            await data.save();
+        }
+    }
+    res.sendStatus(200);
+})
 
 server.listen(port, ()=> {
     console.log("Server is running at port "+port);

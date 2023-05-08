@@ -181,6 +181,7 @@ function updateNewChart(data) {
 
 function buildNewChart(dataSets,callback){
   if (Array.isArray(dataSets)){
+    console.log("arrSize: "+ dataSets.length);
     let arrS = [];
     let arrT = [];
     let arrH = [];
@@ -192,7 +193,7 @@ function buildNewChart(dataSets,callback){
       arrH.push(dataSets[i].H);
     }
     chart.data.labels = createLabels(Lbls);
-    console.log(ThS);console.log(MS);console.log(MT);console.log(MH);
+    // console.log(ThS);console.log(MS);console.log(MT);console.log(MH);
     chart.data.datasets = [
       ThSDataSet(),
       SDataSet(arrS),
