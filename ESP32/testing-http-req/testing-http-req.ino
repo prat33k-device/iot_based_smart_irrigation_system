@@ -8,7 +8,7 @@
 // credientials
 const char* ssid = "Bat_mobile";                            // computer should be connected to the network also for working at localhost
 const char* password =  "sux43c7b";
-const String serverURL = "http://192.168.242.38:3000";
+const String serverURL = "http://192.168.242.112:3000";
 const String authKey = "Jqoe6UzmSPjG7E0";
 
 //pins

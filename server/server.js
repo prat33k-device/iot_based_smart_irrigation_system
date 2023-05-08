@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require("cors");
 //models
 const SensorData = require("./sensor_data");
 const PumpStatus = require("./pump_status");
@@ -28,7 +29,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"))
+app.use(express.static("public"));
+app.use(cors());
 
 
 //statusUpdated && lastDataSet
