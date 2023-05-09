@@ -19,7 +19,7 @@ function buildChart(range,callback){
     });
 }
 socket.on("connect", () => {
-    buildChart(13,(res) => {
+    buildChart($("#Range_input").val(),(res) => {
         if(res){socket.on("newDataReceived",(data) => updateNewChart(data));}
     });
     

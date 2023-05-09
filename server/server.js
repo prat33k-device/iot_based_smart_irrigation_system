@@ -134,15 +134,17 @@ app.post("/update-sensor", async (req, res)=>{
             await data.save();
         }
 
-        CurrS+=req.body.soil_moisture;
-        CurrT+=req.body.temp;
-        CurrH+=req.body.humidity;
+        CurrS+=Number(req.body.soil_moisture);
+        CurrT+=Number(req.body.temp);
+        CurrH+=Number(req.body.humidity);
         const options = { timeZone: 'Asia/Kolkata' };
         // Convert the UTC date to IST
         const istDate = new Date(cur_tm.toLocaleString('en-US', options));
         let HH = istDate.getHours().toString().padStart(2,0);
         let MM = istDate.getMinutes().toString().padStart(2,0);
+        // console.log("data"+CurrS);
         if (data_frequency == range-1){
+            // console.log("breakpoint");
             let data_to_be_send_frontend = {
                 S : CurrS/range,
                 T : CurrT/range,
