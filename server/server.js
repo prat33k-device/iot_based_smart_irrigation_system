@@ -66,8 +66,11 @@ socket.on("lastDataSet", async (rng,callback) => {
     console.log("arrLength: "+ allData.length);
     for (let i = 0; i < allData.length; i += range) {
         let s = 0, t = 0, h = 0;
-        let HH = allData[i].time.getHours().toString().padStart(2,0);
-        let MM = allData[i].time.getMinutes().toString().padStart(2,0);
+        const options = { timeZone: 'Asia/Kolkata' };
+        // Convert the UTC date to IST
+        const istDate = new Date(allData[i].time.toLocaleString('en-US', options));
+        let HH = istDate.getHours().toString().padStart(2,0);
+        let MM = istDate.getMinutes().toString().padStart(2,0);
         for(let j = 0; j<range && i+j < allData.length;j++){
             s+=allData[i+j].soil_moisture;
             t+=allData[i+j].temperature;
@@ -118,7 +121,7 @@ app.get("/sensors", async (req, res)=>{
 
 app.post("/update-sensor", async (req, res)=>{
 
-    const cur_tm = Date.now();
+    const cur_tm = new Date();
     if(req.body.authKey === authKey) {
         const data = new SensorData({
             soil_moisture: req.body.soil_moisture,
@@ -134,12 +137,17 @@ app.post("/update-sensor", async (req, res)=>{
         CurrS+=req.body.soil_moisture;
         CurrT+=req.body.temp;
         CurrH+=req.body.humidity;
+        const options = { timeZone: 'Asia/Kolkata' };
+        // Convert the UTC date to IST
+        const istDate = new Date(cur_tm.toLocaleString('en-US', options));
+        let HH = istDate.getHours().toString().padStart(2,0);
+        let MM = istDate.getMinutes().toString().padStart(2,0);
         if (data_frequency == range-1){
             let data_to_be_send_frontend = {
                 S : CurrS/range,
                 T : CurrT/range,
                 H : CurrH/range,
-                Tm: cur_tm
+                Tm: HH.toString()+":"+MM.toString()
             };
             CurrS=0;CurrT=0;CurrH=0;
             io.emit("newDataReceived",data_to_be_send_frontend);
@@ -209,7 +217,7 @@ app.get("/dashboard",function(req,res){
 });
 
 app.get("/alldata", async (req, res)=>{
-    const allData = await SensorData.find().sort({time : -1});
+    const allData = await SensorData.find().sort({time : -1}).limit(100);
     res.json(allData);
 });
 
