@@ -50,7 +50,7 @@ socket.on("statusUpdated", async (data, callback) => {
     if(serverConnected){
         const pump_status = await PumpStatus.findById(ID_OF_PUMP);
         pump_status.status = data.pump ? 1 : 0;
-        pump_status.is_controlled_by_user = data.auto ? 0 : 1;
+        pump_status.is_controlled_by_user = data.auto ? 1 : 0;
         await pump_status.save();
         callback(true);
     }else{
@@ -118,12 +118,13 @@ app.get("/sensors", async (req, res)=>{
 
 app.post("/update-sensor", async (req, res)=>{
 
+    const cur_tm = Date.now();
     if(req.body.authKey === authKey) {
         const data = new SensorData({
             soil_moisture: req.body.soil_moisture,
             temperature: req.body.temp,
             humidity: req.body.humidity,
-            time: Date.now()
+            time: cur_tm
         });
         if(serverConnected){
             console.log(data);
@@ -137,7 +138,8 @@ app.post("/update-sensor", async (req, res)=>{
             let data_to_be_send_frontend = {
                 S : CurrS/range,
                 T : CurrT/range,
-                H : CurrH/range
+                H : CurrH/range,
+                Tm: cur_tm
             };
             CurrS=0;CurrT=0;CurrH=0;
             io.emit("newDataReceived",data_to_be_send_frontend);

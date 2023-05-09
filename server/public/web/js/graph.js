@@ -6,14 +6,14 @@ var Last121SensorDataReceived = false;
 var Lbls = Array.from({length: 121}, (_, index) => 120-index);
 const status = {
   motor : false,
-  automatic : false,
+  automatic : true,
   get auto(){
     return this.automatic
   },
   set auto(val){
     if ($("#Auto").hasClass("btn-outline-primary")){$("#Auto").removeClass("btn-outline-primary");}
     if ($("#Auto").hasClass("btn-primary")) {$("#Auto").removeClass("btn-primary");}
-    if (val==true){
+    if (val==false){
       $("#Auto").addClass("btn-primary");
     }else{
       $("#Auto").addClass("btn-outline-primary");
@@ -165,7 +165,7 @@ function updateNewChart(data) {
   // data.S /= 30;
   if (Last121SensorDataReceived){
     Lbls.shift();
-    Lbls.push(Date());
+    Lbls.push(data.Tm);
     chart.data.labels = createLabels(Lbls);
     chart.data.datasets[1].data.shift();
     chart.data.datasets[1].data.push(100 - convertSIn100(data.S) );
